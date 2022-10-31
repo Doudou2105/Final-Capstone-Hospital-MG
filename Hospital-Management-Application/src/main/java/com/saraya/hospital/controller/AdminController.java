@@ -25,6 +25,7 @@ import com.saraya.hospital.repository.BillRepo;
 import com.saraya.hospital.repository.DoctorRepo;
 import com.saraya.hospital.repository.PatientRepo;
 import com.saraya.hospital.repository.ReceptionistRepo;
+import com.saraya.hospital.service.AdminService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -39,12 +40,29 @@ public class AdminController {
     private final DoctorRepo doctorRepo;
     private final AppointmentRepo appointmentRepo;
     private final BillRepo billRepo;
+    private final AdminService adminService;
 
     @PostMapping("/addFromAdmin")
     @ResponseStatus(HttpStatus.CREATED)
     public Admin addFromAdmin(@RequestBody final Admin admin){
         return adminRepo.save(admin);
     }
+
+      // Sign the Admin
+      @PostMapping("/loginAdmin")
+      @ResponseStatus(HttpStatus.CREATED)
+      public Admin loginAdmin(@RequestBody final Admin admin) throws Exception{
+       
+        String myEmail = admin.getEmail();
+        String myPassword = admin.getPassword();
+        Admin adminObj = null;
+        if(myEmail != "hospital@gmail.com" && myPassword != "admin123"){
+          adminObj = adminService.getAdminByEmailAndPassword(myEmail, myPassword);
+        }if(adminObj == null){
+          throw new Exception("Bad Request Try again");
+        }
+        return adminObj;
+      }
     
     @GetMapping("/allFromAdmin")
     @ResponseStatus(HttpStatus.OK)
@@ -118,7 +136,7 @@ public class AdminController {
     @DeleteMapping("/deletePatient/{patient_id}")
     @ResponseStatus(HttpStatus.OK)
 	public void deletePatient(@PathVariable Long patient_id ){
-		 receptionistRepo.deleteById(patient_id);
+		 patientRepo.deleteById(patient_id);
 		
 	}
 
@@ -140,7 +158,7 @@ public class AdminController {
     @DeleteMapping("/deleteDoctor/{doctor_id}")
     @ResponseStatus(HttpStatus.OK)
 	public void deleteDoctror(@PathVariable Long doctor_id ){
-		 receptionistRepo.deleteById(doctor_id);
+		 doctorRepo.deleteById(doctor_id);
 		
 	}
 

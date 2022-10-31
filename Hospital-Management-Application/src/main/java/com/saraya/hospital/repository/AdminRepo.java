@@ -8,4 +8,6 @@ import com.saraya.hospital.model.Admin;
 @Repository
 public interface AdminRepo extends JpaRepository<Admin, Long>{
     
+    Admin findByEmail(String email);
+    Admin findByEmailAndPassword(String email, String password);
 }

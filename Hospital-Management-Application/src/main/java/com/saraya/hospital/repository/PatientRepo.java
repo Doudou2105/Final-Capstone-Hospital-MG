@@ -12,6 +12,9 @@ import com.saraya.hospital.model.Patient;
 
 @Repository
 public interface PatientRepo extends JpaRepository<Patient, Long> {
+
+  Patient findByEmail(String email);
+  Patient findByEmailAndPassword(String email, String password);
   }                                                   
                                                                                                                                                                                                     
                                                                                                                                                                                         

@@ -3,6 +3,7 @@ package com.saraya.hospital.controller;
 import java.util.List;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +17,7 @@ import com.saraya.hospital.exception.ResourceNotFoundException;
 import com.saraya.hospital.model.Doctor;
 
 import com.saraya.hospital.repository.DoctorRepo;
-
+import com.saraya.hospital.service.DoctorService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,13 +27,38 @@ import lombok.RequiredArgsConstructor;
 public class DoctorController {
     
     private final DoctorRepo doctorRepo;
+    private final DoctorService doctorService;
    
-    
+    //Register
     @PostMapping("/addDoctor")
     @ResponseStatus(HttpStatus.CREATED)
-    public Doctor addDoctor(@RequestBody final Doctor doctor){
+    public Doctor addDoctor(@RequestBody final Doctor doctor) throws Exception{
+            String myEmail = doctor.getEmail();
+            if(myEmail != null && !"".equals(myEmail)){
+              Doctor doctorObj = doctorService.getDoctorByEmail(myEmail);
+              if(doctorObj != null){
+                throw new Exception("Doctor with"+" "+ myEmail+" "+"Already exsit");
+              }
+            }
+
         return doctorRepo.save(doctor);
     }
+
+      // Sign the Doctor
+      @PostMapping("/loginDoctor")
+      @ResponseStatus(HttpStatus.CREATED)
+      public Doctor loginDoctor(@RequestBody final Doctor doctor) throws Exception{
+        String myEmail = doctor.getEmail();
+        String myPassword = doctor.getPassword();
+        Doctor doctorObj = null;
+        if(myEmail != null && myPassword != null){
+          doctorObj = doctorService.getDoctorByEmailAndPassword(myEmail, myPassword);
+        }if(doctorObj == null){
+          throw new Exception("Bad Request Try again");
+        }
+        return doctorObj;
+      }
+
 
     
     @GetMapping("/allDoctors")
@@ -72,5 +98,11 @@ public class DoctorController {
         orElseThrow(() -> new ResourceNotFoundException("Doctor : " + doctor_id +" "+"doesn't exist"));
     }
 
+    @DeleteMapping("/deleteDoctor/{doctor_id}")
+    @ResponseStatus(HttpStatus.OK)
+	public void deleteDoctror(@PathVariable Long doctor_id ){
+		 doctorRepo.deleteById(doctor_id);
+		
+	}
 
 }

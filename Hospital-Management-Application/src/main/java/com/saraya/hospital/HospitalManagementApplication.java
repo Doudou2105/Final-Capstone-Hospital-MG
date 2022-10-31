@@ -3,6 +3,8 @@ package com.saraya.hospital;
 import java.util.Arrays;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -10,8 +12,11 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 
+import com.saraya.hospital.model.Admin;
+import com.saraya.hospital.repository.AdminRepo;
+
 @SpringBootApplication
-public class HospitalManagementApplication {
+public class HospitalManagementApplication implements CommandLineRunner{
 
 	@Bean
 	public ModelMapper modelMapper() {
@@ -36,7 +41,19 @@ public class HospitalManagementApplication {
 		UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
 		urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
 		return new CorsFilter(urlBasedCorsConfigurationSource);
+	}
+
+	@Autowired
+	private AdminRepo adminRepo;
+
+	@Override
+	public void run(String... args) throws Exception {
+		
+		Admin admin = new Admin(null, "hospital@gmail.com", "admin123", null, null, null, null);
+		this.adminRepo.save(admin);
 	}  
+
+
 
 
 }

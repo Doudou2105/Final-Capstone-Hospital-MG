@@ -11,6 +11,7 @@ import com.saraya.hospital.model.Doctor;
 @Repository
 public interface DoctorRepo extends JpaRepository<Doctor, Long> {
 
-   
+    Doctor findByEmail(String email);
+    Doctor findByEmailAndPassword(String email, String password);
     
 }
